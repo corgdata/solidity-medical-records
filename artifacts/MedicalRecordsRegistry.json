@@ -1,0 +1,1263 @@
+{
+  "contractName": "MedicalRecordsRegistry",
+  "sourceName": "contracts/MedicalRecordsRegistry.sol",
+  "compilerVersion": "0.8.30+commit.73712a01.Emscripten.clang",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "InvalidCommitment",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidDelegate",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidExpiry",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidPermissions",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotPatient",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RecordAlreadyExists",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RecordArchived",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "StaleVersion",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UnauthorizedWriter",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UnknownRecord",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UnknownVersion",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "delegate",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "permissions",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "epoch",
+          "type": "uint256"
+        }
+      ],
+      "name": "AccessGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "delegate",
+          "type": "address"
+        }
+      ],
+      "name": "AccessRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "patient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newEpoch",
+          "type": "uint256"
+        }
+      ],
+      "name": "AllAccessRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "archived",
+          "type": "bool"
+        }
+      ],
+      "name": "ArchiveStatusChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "patient",
+          "type": "address"
+        }
+      ],
+      "name": "RecordCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint64",
+          "name": "version",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "author",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "locatorCommitment",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "ciphertextHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "VersionAppended",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "READ",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WRITE",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expectedVersion",
+          "type": "uint64"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "locatorCommitment",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ciphertextHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "appendVersion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "canRead",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "canWrite",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "patient",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        }
+      ],
+      "name": "computeRecordId",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "locatorCommitment",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ciphertextHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "createRecord",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "delegate",
+          "type": "address"
+        }
+      ],
+      "name": "getGrant",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "permissions",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expiresAt",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "epoch",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct MedicalRecordsRegistry.Grant",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRecord",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "patient",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "archived",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint64",
+              "name": "versionCount",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct MedicalRecordsRegistry.Record",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint64",
+          "name": "version",
+          "type": "uint64"
+        }
+      ],
+      "name": "getVersion",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "locatorCommitment",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "ciphertextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "author",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "createdAt",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct MedicalRecordsRegistry.Version",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "delegate",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "permissions",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "grantAccess",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "patient",
+          "type": "address"
+        }
+      ],
+      "name": "patientAccessEpoch",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "epoch",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "delegate",
+          "type": "address"
+        }
+      ],
+      "name": "revokeAccess",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "revokeAllAccess",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recordId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bool",
+          "name": "archived",
+          "type": "bool"
+        }
+      ],
+      "name": "setArchived",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50610e948061001f6000396000f3fe608060405234801561001057600080fd5b50600436106100f55760003560e01c806384484e6311610097578063bbbde85511610066578063bbbde855146102a2578063cd98de85146102b5578063ce78ff3f146102c8578063ddd5fd91146102d057600080fd5b806384484e63146102185780638d53b2081461022b5780638f1ac1751461023e5780639595c23f1461026157600080fd5b80634ba9c12c116100d35780634ba9c12c146101b55780635dbac8fd146101e357806366599dc3146101f65780637272d41d1461021057600080fd5b8063213681cd146100fa5780632b7fff311461014857806338d4ea4f146101a0575b600080fd5b61010d610108366004610c44565b6102e3565b6040805182516001600160a01b03168152602080840151151590820152918101516001600160401b0316908201526060015b60405180910390f35b61015b610156366004610c74565b61034c565b60405161013f919081518152602080830151908201526040808301516001600160a01b0316908201526060918201516001600160401b03169181019190915260800190565b6101b36101ae366004610ca0565b61042e565b005b6101d56101c3366004610cf2565b60036020526000908152604090205481565b60405190815260200161013f565b6101b36101f1366004610d0d565b610527565b6101fe600181565b60405160ff909116815260200161013f565b6101b36106db565b6101b3610226366004610d62565b610737565b6101b3610239366004610d97565b610799565b61025161024c366004610d97565b610809565b604051901515815260200161013f565b61027461026f366004610d97565b61082c565b60408051825160ff1681526020808401516001600160401b031690820152918101519082015260600161013f565b6101d56102b0366004610dba565b6108aa565b6102516102c3366004610d97565b6108e7565b6101fe600281565b6101d56102de366004610de4565b610903565b604080516060810182526000808252602082018190529181019190915261030982610a05565b6040805160608101825291546001600160a01b0381168352600160a01b810460ff1615156020840152600160a81b90046001600160401b03169082015292915050565b60408051608081018252600080825260208201819052918101829052606081018290529061037984610a05565b90506001600160401b03831615806103a5575080546001600160401b03600160a81b9091048116908416115b156103c357604051632369a9a960e21b815260040160405180910390fd5b505060008281526001602081815260408084206001600160401b0380871686529083529381902081516080810183528154815293810154928401929092526002909101546001600160a01b03811691830191909152600160a01b900490911660608201525b92915050565b600061043985610a05565b8054909150600160a01b900460ff16156104665760405163ee526ced60e01b815260040160405180910390fd5b6104738582336002610a40565b6104905760405163b426abc160e01b815260040160405180910390fd5b80546001600160401b03858116600160a81b90920416146104c4576040516354b23f7160e11b815260040160405180910390fd5b6104ce8383610b17565b80546000906104ee90600160a81b90046001600160401b03166001610e26565b825467ffffffffffffffff60a81b1916600160a81b6001600160401b03831602178355905061051f86828686610b44565b505050505050565b600061053285610c0c565b8054909150600160a01b900460ff161561055f5760405163ee526ced60e01b815260040160405180910390fd5b6001600160a01b038416158061057d57506001600160a01b03841633145b1561059b57604051632d618d8160e21b815260040160405180910390fd5b60ff831615806105ae5750600360ff8416115b156105cc5760405163932d94f760e01b815260040160405180910390fd5b42826001600160401b0316116105f45760405162d36c8560e81b815260040160405180910390fd5b33600090815260036020908152604080832054815160608101835260ff80891682526001600160401b038089168387019081528386018581528d8952600288528689206001600160a01b038e16808b529852978690209351845491519092166101000268ffffffffffffffffff19909116919092161717815593516001909401939093555187907f74053c6a2de9bcec4b50beb6d7a97eaa8bc02d0d18c41ec817bdf73ae4272817906106cb9088908890879060ff9390931683526001600160401b03919091166020830152604082015260600190565b60405180910390a3505050505050565b336000908152600360205260408120805482906106f790610e45565b918290555060405181815290915033907f75306b31de14b1727117f8970389f5e74824e4a01dda7384e78f2c5d45aab0fa9060200160405180910390a250565b600061074283610c0c565b805460ff60a01b1916600160a01b84151590810291909117825560405190815290915083907f2f932a01ddb60b7fc849904ba9465b650bfff27fedd13d8471111572f5f808869060200160405180910390a2505050565b6107a282610c0c565b5060008281526002602090815260408083206001600160a01b0385168085529252808320805468ffffffffffffffffff1916815560010183905551909184917fe7906b77ea165c70ad8268ce5b59b778a198edf9c1ae4118378eefdc76fce5f49190a35050565b6000828152602081905260408120610825908490846002610a40565b9392505050565b604080516060810182526000808252602082018190529181019190915261085283610a05565b505060009182526002602090815260408084206001600160a01b03939093168452918152918190208151606081018352815460ff8116825261010090046001600160401b031693810193909352600101549082015290565b604080516001600160a01b038416602082015290810182905260009060600160405160208183030381529060405280519060200120905092915050565b6000828152602081905260408120610825908490846001610a40565b600061090f8383610b17565b61091933856108aa565b6000818152602081905260409020549091506001600160a01b03161561095257604051631a9fb0df60e01b815260040160405180910390fd5b60408051606081018252338082526000602080840182815260018587019081528784529183905285832094518554915192516001600160401b0316600160a81b0267ffffffffffffffff60a81b19931515600160a01b026001600160a81b03199093166001600160a01b039290921691909117919091179190911617909255915183917ffc39d54de380118148fa225c58baeff6e4f590a1b85797533822b367bfe982c091a36108258160018585610b44565b600081815260208190526040902080546001600160a01b0316610a3b5760405163cde6fb7160e01b815260040160405180910390fd5b919050565b82546000906001600160a01b03161580610a6257508354600160a01b900460ff165b80610a7457506001600160a01b038316155b15610a8157506000610b0f565b83546001600160a01b0390811690841603610a9e57506001610b0f565b60008581526002602090815260408083206001600160a01b038716845290915290208054831660ff1615801590610ae35750805461010090046001600160401b031642105b8015610b0b575084546001600160a01b03166000908152600360205260409020546001820154145b9150505b949350505050565b811580610b22575080155b15610b4057604051636033c4fd60e11b815260040160405180910390fd5b5050565b604080516080810182528381526020808201848152338385018181526001600160401b034281166060870190815260008c815260018088528982208d8516808452908952918a9020985189559551958801959095559151600290960180549251909116600160a01b026001600160e01b03199092166001600160a01b0390961695909517179093558351868152918201859052919287917f9c900c7faa33d0b9e4284bb939b0c37d5fc38698a2b584d3fd9f495ca001c6a7910160405180910390a450505050565b6000610c1782610a05565b80549091506001600160a01b03163314610a3b57604051638dbe942f60e01b815260040160405180910390fd5b600060208284031215610c5657600080fd5b5035919050565b80356001600160401b0381168114610a3b57600080fd5b60008060408385031215610c8757600080fd5b82359150610c9760208401610c5d565b90509250929050565b60008060008060808587031215610cb657600080fd5b84359350610cc660208601610c5d565b93969395505050506040820135916060013590565b80356001600160a01b0381168114610a3b57600080fd5b600060208284031215610d0457600080fd5b61082582610cdb565b60008060008060808587031215610d2357600080fd5b84359350610d3360208601610cdb565b9250604085013560ff81168114610d4957600080fd5b9150610d5760608601610c5d565b905092959194509250565b60008060408385031215610d7557600080fd5b8235915060208301358015158114610d8c57600080fd5b809150509250929050565b60008060408385031215610daa57600080fd5b82359150610c9760208401610cdb565b60008060408385031215610dcd57600080fd5b610dd683610cdb565b946020939093013593505050565b600080600060608486031215610df957600080fd5b505081359360208301359350604090920135919050565b634e487b7160e01b600052601160045260246000fd5b6001600160401b03818116838216019081111561042857610428610e10565b600060018201610e5757610e57610e10565b506001019056fea26469706673582212200e638f66c49829e3ab27a9a3669d161cd597fd2a21df20b01c5c6a552e4d221664736f6c634300081e0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100f55760003560e01c806384484e6311610097578063bbbde85511610066578063bbbde855146102a2578063cd98de85146102b5578063ce78ff3f146102c8578063ddd5fd91146102d057600080fd5b806384484e63146102185780638d53b2081461022b5780638f1ac1751461023e5780639595c23f1461026157600080fd5b80634ba9c12c116100d35780634ba9c12c146101b55780635dbac8fd146101e357806366599dc3146101f65780637272d41d1461021057600080fd5b8063213681cd146100fa5780632b7fff311461014857806338d4ea4f146101a0575b600080fd5b61010d610108366004610c44565b6102e3565b6040805182516001600160a01b03168152602080840151151590820152918101516001600160401b0316908201526060015b60405180910390f35b61015b610156366004610c74565b61034c565b60405161013f919081518152602080830151908201526040808301516001600160a01b0316908201526060918201516001600160401b03169181019190915260800190565b6101b36101ae366004610ca0565b61042e565b005b6101d56101c3366004610cf2565b60036020526000908152604090205481565b60405190815260200161013f565b6101b36101f1366004610d0d565b610527565b6101fe600181565b60405160ff909116815260200161013f565b6101b36106db565b6101b3610226366004610d62565b610737565b6101b3610239366004610d97565b610799565b61025161024c366004610d97565b610809565b604051901515815260200161013f565b61027461026f366004610d97565b61082c565b60408051825160ff1681526020808401516001600160401b031690820152918101519082015260600161013f565b6101d56102b0366004610dba565b6108aa565b6102516102c3366004610d97565b6108e7565b6101fe600281565b6101d56102de366004610de4565b610903565b604080516060810182526000808252602082018190529181019190915261030982610a05565b6040805160608101825291546001600160a01b0381168352600160a01b810460ff1615156020840152600160a81b90046001600160401b03169082015292915050565b60408051608081018252600080825260208201819052918101829052606081018290529061037984610a05565b90506001600160401b03831615806103a5575080546001600160401b03600160a81b9091048116908416115b156103c357604051632369a9a960e21b815260040160405180910390fd5b505060008281526001602081815260408084206001600160401b0380871686529083529381902081516080810183528154815293810154928401929092526002909101546001600160a01b03811691830191909152600160a01b900490911660608201525b92915050565b600061043985610a05565b8054909150600160a01b900460ff16156104665760405163ee526ced60e01b815260040160405180910390fd5b6104738582336002610a40565b6104905760405163b426abc160e01b815260040160405180910390fd5b80546001600160401b03858116600160a81b90920416146104c4576040516354b23f7160e11b815260040160405180910390fd5b6104ce8383610b17565b80546000906104ee90600160a81b90046001600160401b03166001610e26565b825467ffffffffffffffff60a81b1916600160a81b6001600160401b03831602178355905061051f86828686610b44565b505050505050565b600061053285610c0c565b8054909150600160a01b900460ff161561055f5760405163ee526ced60e01b815260040160405180910390fd5b6001600160a01b038416158061057d57506001600160a01b03841633145b1561059b57604051632d618d8160e21b815260040160405180910390fd5b60ff831615806105ae5750600360ff8416115b156105cc5760405163932d94f760e01b815260040160405180910390fd5b42826001600160401b0316116105f45760405162d36c8560e81b815260040160405180910390fd5b33600090815260036020908152604080832054815160608101835260ff80891682526001600160401b038089168387019081528386018581528d8952600288528689206001600160a01b038e16808b529852978690209351845491519092166101000268ffffffffffffffffff19909116919092161717815593516001909401939093555187907f74053c6a2de9bcec4b50beb6d7a97eaa8bc02d0d18c41ec817bdf73ae4272817906106cb9088908890879060ff9390931683526001600160401b03919091166020830152604082015260600190565b60405180910390a3505050505050565b336000908152600360205260408120805482906106f790610e45565b918290555060405181815290915033907f75306b31de14b1727117f8970389f5e74824e4a01dda7384e78f2c5d45aab0fa9060200160405180910390a250565b600061074283610c0c565b805460ff60a01b1916600160a01b84151590810291909117825560405190815290915083907f2f932a01ddb60b7fc849904ba9465b650bfff27fedd13d8471111572f5f808869060200160405180910390a2505050565b6107a282610c0c565b5060008281526002602090815260408083206001600160a01b0385168085529252808320805468ffffffffffffffffff1916815560010183905551909184917fe7906b77ea165c70ad8268ce5b59b778a198edf9c1ae4118378eefdc76fce5f49190a35050565b6000828152602081905260408120610825908490846002610a40565b9392505050565b604080516060810182526000808252602082018190529181019190915261085283610a05565b505060009182526002602090815260408084206001600160a01b03939093168452918152918190208151606081018352815460ff8116825261010090046001600160401b031693810193909352600101549082015290565b604080516001600160a01b038416602082015290810182905260009060600160405160208183030381529060405280519060200120905092915050565b6000828152602081905260408120610825908490846001610a40565b600061090f8383610b17565b61091933856108aa565b6000818152602081905260409020549091506001600160a01b03161561095257604051631a9fb0df60e01b815260040160405180910390fd5b60408051606081018252338082526000602080840182815260018587019081528784529183905285832094518554915192516001600160401b0316600160a81b0267ffffffffffffffff60a81b19931515600160a01b026001600160a81b03199093166001600160a01b039290921691909117919091179190911617909255915183917ffc39d54de380118148fa225c58baeff6e4f590a1b85797533822b367bfe982c091a36108258160018585610b44565b600081815260208190526040902080546001600160a01b0316610a3b5760405163cde6fb7160e01b815260040160405180910390fd5b919050565b82546000906001600160a01b03161580610a6257508354600160a01b900460ff165b80610a7457506001600160a01b038316155b15610a8157506000610b0f565b83546001600160a01b0390811690841603610a9e57506001610b0f565b60008581526002602090815260408083206001600160a01b038716845290915290208054831660ff1615801590610ae35750805461010090046001600160401b031642105b8015610b0b575084546001600160a01b03166000908152600360205260409020546001820154145b9150505b949350505050565b811580610b22575080155b15610b4057604051636033c4fd60e11b815260040160405180910390fd5b5050565b604080516080810182528381526020808201848152338385018181526001600160401b034281166060870190815260008c815260018088528982208d8516808452908952918a9020985189559551958801959095559151600290960180549251909116600160a01b026001600160e01b03199092166001600160a01b0390961695909517179093558351868152918201859052919287917f9c900c7faa33d0b9e4284bb939b0c37d5fc38698a2b584d3fd9f495ca001c6a7910160405180910390a450505050565b6000610c1782610a05565b80549091506001600160a01b03163314610a3b57604051638dbe942f60e01b815260040160405180910390fd5b600060208284031215610c5657600080fd5b5035919050565b80356001600160401b0381168114610a3b57600080fd5b60008060408385031215610c8757600080fd5b82359150610c9760208401610c5d565b90509250929050565b60008060008060808587031215610cb657600080fd5b84359350610cc660208601610c5d565b93969395505050506040820135916060013590565b80356001600160a01b0381168114610a3b57600080fd5b600060208284031215610d0457600080fd5b61082582610cdb565b60008060008060808587031215610d2357600080fd5b84359350610d3360208601610cdb565b9250604085013560ff81168114610d4957600080fd5b9150610d5760608601610c5d565b905092959194509250565b60008060408385031215610d7557600080fd5b8235915060208301358015158114610d8c57600080fd5b809150509250929050565b60008060408385031215610daa57600080fd5b82359150610c9760208401610cdb565b60008060408385031215610dcd57600080fd5b610dd683610cdb565b946020939093013593505050565b600080600060608486031215610df957600080fd5b505081359360208301359350604090920135919050565b634e487b7160e01b600052601160045260246000fd5b6001600160401b03818116838216019081111561042857610428610e10565b600060018201610e5757610e57610e10565b506001019056fea26469706673582212200e638f66c49829e3ab27a9a3669d161cd597fd2a21df20b01c5c6a552e4d221664736f6c634300081e0033",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.30+commit.73712a01"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "name": "InvalidCommitment",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "InvalidDelegate",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "InvalidExpiry",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "InvalidPermissions",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "NotPatient",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "RecordAlreadyExists",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "RecordArchived",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "StaleVersion",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "UnauthorizedWriter",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "UnknownRecord",
+          "type": "error"
+        },
+        {
+          "inputs": [],
+          "name": "UnknownVersion",
+          "type": "error"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "delegate",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint8",
+              "name": "permissions",
+              "type": "uint8"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint64",
+              "name": "expiresAt",
+              "type": "uint64"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "epoch",
+              "type": "uint256"
+            }
+          ],
+          "name": "AccessGranted",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "delegate",
+              "type": "address"
+            }
+          ],
+          "name": "AccessRevoked",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "patient",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newEpoch",
+              "type": "uint256"
+            }
+          ],
+          "name": "AllAccessRevoked",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bool",
+              "name": "archived",
+              "type": "bool"
+            }
+          ],
+          "name": "ArchiveStatusChanged",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "patient",
+              "type": "address"
+            }
+          ],
+          "name": "RecordCreated",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint64",
+              "name": "version",
+              "type": "uint64"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "author",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "locatorCommitment",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "ciphertextHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "VersionAppended",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "READ",
+          "outputs": [
+            {
+              "internalType": "uint8",
+              "name": "",
+              "type": "uint8"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "WRITE",
+          "outputs": [
+            {
+              "internalType": "uint8",
+              "name": "",
+              "type": "uint8"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expectedVersion",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "locatorCommitment",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "ciphertextHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "appendVersion",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "canRead",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "canWrite",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "patient",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            }
+          ],
+          "name": "computeRecordId",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "locatorCommitment",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "ciphertextHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "createRecord",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "delegate",
+              "type": "address"
+            }
+          ],
+          "name": "getGrant",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "uint8",
+                  "name": "permissions",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "expiresAt",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "epoch",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct MedicalRecordsRegistry.Grant",
+              "name": "",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRecord",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "patient",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "archived",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "versionCount",
+                  "type": "uint64"
+                }
+              ],
+              "internalType": "struct MedicalRecordsRegistry.Record",
+              "name": "",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "version",
+              "type": "uint64"
+            }
+          ],
+          "name": "getVersion",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "bytes32",
+                  "name": "locatorCommitment",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "ciphertextHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "address",
+                  "name": "author",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "createdAt",
+                  "type": "uint64"
+                }
+              ],
+              "internalType": "struct MedicalRecordsRegistry.Version",
+              "name": "",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "delegate",
+              "type": "address"
+            },
+            {
+              "internalType": "uint8",
+              "name": "permissions",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expiresAt",
+              "type": "uint64"
+            }
+          ],
+          "name": "grantAccess",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "patient",
+              "type": "address"
+            }
+          ],
+          "name": "patientAccessEpoch",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "epoch",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "delegate",
+              "type": "address"
+            }
+          ],
+          "name": "revokeAccess",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "revokeAllAccess",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "recordId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bool",
+              "name": "archived",
+              "type": "bool"
+            }
+          ],
+          "name": "setArchived",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "devdoc": {
+        "details": "No administrator, external calls, upgrade mechanism, funds or identity verification.",
+        "kind": "dev",
+        "methods": {
+          "appendVersion(bytes32,uint64,bytes32,bytes32)": {
+            "details": "Write authority establishes wallet provenance, not clinical truth or professional status.",
+            "params": {
+              "expectedVersion": "Current version count, preventing silent concurrent overwrites."
+            }
+          },
+          "computeRecordId(address,bytes32)": {
+            "details": "IDs are local to this deployment; off-chain signing must also bind chain and contract."
+          },
+          "createRecord(bytes32,bytes32,bytes32)": {
+            "params": {
+              "ciphertextHash": "Hash of the encrypted payload, never its plaintext.",
+              "locatorCommitment": "Commitment to a high-entropy opaque off-chain locator."
+            }
+          },
+          "grantAccess(bytes32,address,uint8,uint64)": {
+            "details": "READ and WRITE are independent. Grants cover all past and future versions of this record. Expiry is exclusive: access ends when block.timestamp >= expiresAt. No permanent grants."
+          },
+          "revokeAllAccess()": {
+            "details": "New grants use the new epoch; old grants never reactivate on restore or regrant elsewhere."
+          },
+          "setArchived(bytes32,bool)": {
+            "details": "Archive is not deletion. Restoring reactivates grants still valid by expiry and epoch."
+          }
+        },
+        "title": "Patient-controlled registry for encrypted off-chain medical records",
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "appendVersion(bytes32,uint64,bytes32,bytes32)": {
+            "notice": "Appends a version without modifying any prior version."
+          },
+          "canRead(bytes32,address)": {
+            "notice": "Policy check for authenticated off-chain gateways, not a confidentiality boundary."
+          },
+          "computeRecordId(address,bytes32)": {
+            "notice": "Derives an ID in a patient's namespace. Use a cryptographically random salt."
+          },
+          "createRecord(bytes32,bytes32,bytes32)": {
+            "notice": "Registers the caller as patient and creates immutable version 1."
+          },
+          "getGrant(bytes32,address)": {
+            "notice": "Returns raw grant state, which may be expired, invalidated or suspended. Use canRead/canWrite for the effective permission decision."
+          },
+          "getRecord(bytes32)": {
+            "notice": "Public metadata; access control cannot hide blockchain storage."
+          },
+          "getVersion(bytes32,uint64)": {
+            "notice": "Returns immutable public commitment metadata for a 1-indexed version."
+          },
+          "grantAccess(bytes32,address,uint8,uint64)": {
+            "notice": "Replaces the delegate's complete record-level grant; permissions are READ, WRITE or both."
+          },
+          "revokeAccess(bytes32,address)": {
+            "notice": "Revokes a delegate, including while archived; does not retract disclosed keys or copies."
+          },
+          "revokeAllAccess()": {
+            "notice": "Invalidates every existing grant across all records owned by the caller in O(1)."
+          },
+          "setArchived(bytes32,bool)": {
+            "notice": "Suspends/resumes gateway read policy and appends, including the patient's access."
+          }
+        },
+        "notice": "ALL chain state, calldata and events are public, including wallet relationships. Never submit names, diagnoses, plaintext records, URLs, encryption keys, or plaintext hashes. Permissions are policy signals for an authenticated off-chain key/storage gateway; they do not hide chain state or retract data or keys already disclosed.",
+        "version": 1
+      }
+    },
+    "settings": {
+      "compilationTarget": {
+        "contracts/MedicalRecordsRegistry.sol": "MedicalRecordsRegistry"
+      },
+      "evmVersion": "paris",
+      "libraries": {},
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "remappings": []
+    },
+    "sources": {
+      "contracts/MedicalRecordsRegistry.sol": {
+        "keccak256": "0x629a7fcc4529a8b3c87a97ff1650dd4a36037b85a386d9d2d804f59cf823abab",
+        "license": "MIT",
+        "urls": [
+          "bzz-raw://85971a8da13cc6a1264cbcbbf5e82675149ad8ac60a44a5124480d4b88cd0993",
+          "dweb:/ipfs/QmT1U7C31FpkSU6DMLD9mP9CcrCXkyT7FRM3Yw6St1eRcU"
+        ]
+      }
+    },
+    "version": 1
+  }
+}
