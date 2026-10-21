@@ -1,0 +1,44 @@
+Command: npm test
+Environment: Node.js v24.19.0
+Pretest: npm run compile (Solidity 0.8.30, Paris EVM, optimizer 200 runs)
+Compiled MedicalRecordsRegistry: 3732 deployed bytes; solc 0.8.30+commit.73712a01.Emscripten.clang; Paris EVM.
+
+> medical-records-registry@0.1.0 test
+> node --test test/*.test.mjs
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/ce06c34ba00b/medical-records/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/ce06c34ba00b/medical-records/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+✔ creation records ownership, immutable first version, and owner permissions (751.651087ms)
+✔ unknown records deny access and metadata/version reads reject (210.690979ms)
+✔ record identifiers are patient namespaced; duplicate creation cannot overwrite (369.969895ms)
+✔ zero commitments and ciphertext hashes are rejected on create and append (194.023266ms)
+✔ ungranted callers cannot append or manage permissions or archive (208.028638ms)
+✔ read-only permission allows gateway read authorization but not append (270.644412ms)
+✔ writer appends attributed version without modifying earlier version or gaining administration (323.322083ms)
+✔ compare-and-swap rejects stale and future versions; invalid indices reject (238.219863ms)
+✔ grants reject invalid masks, zero address, and expired grants (227.211851ms)
+✔ grant expires exactly at expiresAt; expired writers cannot append (308.495835ms)
+✔ revocation immediately blocks read and write; a new explicit grant works (404.926609ms)
+✔ global revoke invalidates all patient grants without affecting another patient (738.546157ms)
+✔ archiving disables owner and delegate policy access and writes; restoring preserves history (606.198959ms)
+✔ metadata is publicly readable even without an access grant (190.716587ms)
+✔ state-changing operations emit parseable events with record identifiers (520.165666ms)
+✔ write-only grants do not imply reads and replacement can downgrade a writer to reader (451.764038ms)
+✔ restore reactivates retained valid grants but not grants revoked while archived (459.999818ms)
+✔ global revoke covers multiple same-owner records, including archived ones, and isolates other patients (772.374129ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7744.027569
+

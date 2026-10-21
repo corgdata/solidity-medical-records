@@ -1,0 +1,21 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Medical Records Registry",
+  "description": "Solidity prototype of a patient-controlled consent and integrity registry for encrypted, off-chain medical records. No protected health information is stored on chain.",
+  "codeRepository": "https://github.com/corgdata/solidity-medical-records",
+  "url": "https://www.corgdata.io",
+  "programmingLanguage": ["Solidity", "JavaScript"],
+  "runtimePlatform": "Node.js 22+",
+  "license": "https://spdx.org/licenses/MIT",
+  "version": "0.1.0",
+  "dateCreated": "2026-10-21",
+  "author": {
+    "@type": "Person",
+    "givenName": "Pavel",
+    "familyName": "Zagadailov",
+    "@id": "https://orcid.org/0000-0002-5433-1118",
+    "affiliation": { "@type": "Organization", "name": "Clinical Outcomes Research Group (CORG)" }
+  },
+  "keywords": ["solidity", "smart contracts", "medical records", "consent management", "health data governance"]
+}

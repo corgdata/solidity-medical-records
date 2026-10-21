@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Medical Records Registry"
+abstract: "Solidity prototype of a patient-controlled consent and integrity registry for encrypted, off-chain medical records: programmable consent, append-only versioning, and tamper-evident commitments. No protected health information is stored on chain."
+authors:
+  - family-names: Zagadailov
+    given-names: Pavel
+    orcid: "https://orcid.org/0000-0002-5433-1118"
+    affiliation: "Clinical Outcomes Research Group (CORG)"
+repository-code: "https://github.com/corgdata/solidity-medical-records"
+url: "https://www.corgdata.io"
+license: MIT
+date-released: 2026-10-21
+version: 0.1.0
+keywords:
+  - solidity
+  - smart contracts
+  - medical records
+  - consent management
+  - health data governance
