@@ -9,7 +9,7 @@
     "pretest": "npm run compile"
   },
   "keywords": [],
-  "author": "",
+  "author": "Clinical Outcomes Research Group (CORG LLC)",
   "license": "MIT",
   "type": "module",
   "devDependencies": {

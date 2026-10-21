@@ -17,5 +17,6 @@
     "@id": "https://orcid.org/0000-0002-5433-1118",
     "affiliation": { "@type": "Organization", "name": "Clinical Outcomes Research Group (CORG)" }
   },
+  "copyrightHolder": { "@type": "Organization", "name": "Clinical Outcomes Research Group, CORG LLC" },
   "keywords": ["solidity", "smart contracts", "medical records", "consent management", "health data governance"]
 }

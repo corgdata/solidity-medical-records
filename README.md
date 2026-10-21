@@ -80,3 +80,7 @@ See `SECURITY_REVIEW.md` for the agent review and `VALIDATION.md` for executed c
 - [Solidity security considerations](https://docs.soliditylang.org/en/latest/security-considerations.html): public state, authorization and external-call risks.
 - [Ethereum storage strategies](https://ethereum.org/developers/docs/data-availability/blockchain-data-storage-strategies/): on-chain versus off-chain storage tradeoffs.
 
+
+## Copyright
+
+Copyright (c) 2026 Clinical Outcomes Research Group, CORG LLC. Released under the MIT License; see LICENSE and NOTICE.
