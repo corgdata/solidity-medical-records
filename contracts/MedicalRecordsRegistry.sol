@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Clinical Outcomes Research Group, CORG LLC
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
