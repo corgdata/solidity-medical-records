@@ -84,3 +84,7 @@ See `SECURITY_REVIEW.md` for the agent review and `VALIDATION.md` for executed c
 ## Copyright
 
 Copyright (c) 2026 Clinical Outcomes Research Group, CORG LLC. Released under the MIT License; see LICENSE and NOTICE.
+
+## Related
+
+The full application built on this registry — gateway, encrypted vault, tamper-evident audit anchoring, FHIR export, and a zero-knowledge consent-proof prototype — lives at [corgdata/corg-record-vault](https://github.com/corgdata/corg-record-vault).
