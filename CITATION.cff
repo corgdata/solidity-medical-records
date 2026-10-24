@@ -9,6 +9,14 @@ authors:
     orcid: "https://orcid.org/0000-0002-5433-1118"
     affiliation: "Clinical Outcomes Research Group (CORG)"
 repository-code: "https://github.com/corgdata/solidity-medical-records"
+references:
+  - type: article
+    title: "An open methods and data description for a governed synthetic genetic pool simulated with msprime"
+    authors:
+      - family-names: Zagadailov
+        given-names: Pavel
+        orcid: "https://orcid.org/0000-0002-5433-1118"
+    doi: "10.5281/zenodo.23599579"
 url: "https://www.corgdata.io"
 license: MIT
 date-released: 2026-10-21
