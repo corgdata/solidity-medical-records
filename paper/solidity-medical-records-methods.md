@@ -209,8 +209,8 @@ Consent, audit, and integrity attestation for medical records can be expressed a
 6. HIPAA Privacy Rule, 45 CFR Part 160 and Part 164.
 7. EU General Data Protection Regulation (2016/679), esp. Art. 17 (right to erasure).
 8. Gordon, W. J. & Catalini, C. (2018). Blockchain Technology for Healthcare: Facilitating the Transition to Patient-Driven Interoperability. *Comp. Struct. Biotech. J.* 16:224–230.
-9. Zagadailov, P. (2026). A governance and ethics framework for computational reproductive selection modeling. Zenodo. https://doi.org/10.5281/zenodo.23068885
-10. Zagadailov, P. (2026). A governed synthetic genetic pool as a computational framework anchored to real population allele frequencies and simulated with msprime. Zenodo. https://doi.org/10.5281/zenodo.23068129
+9. Zagadailov, P. (2026). A governance and ethics framework for computational reproductive selection modeling. Zenodo. https://doi.org/10.5281/zenodo.23599575
+10. Zagadailov, P. (2026). A governed synthetic genetic pool as a computational framework anchored to real population allele frequencies and simulated with msprime. Zenodo. https://doi.org/10.5281/zenodo.23599821
 
 ---
 
