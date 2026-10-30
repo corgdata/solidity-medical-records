@@ -246,3 +246,169 @@ test('global revoke covers multiple same-owner records, including archived ones,
   assert.equal(await c.canRead(r, clinician.address), true);
   assert.equal(await c.canRead(sameOwnerRecord, clinician.address), false);
 });
+
+test('seeded random operation sequences preserve access, expiry, archive, and version invariants', async t => {
+  const SEED = 20261030;
+  const STEPS = 200;
+  let state = SEED >>> 0;
+  const nextRandom = () => {
+    state = (state + 0x6D2B79F5) | 0;
+    let x = Math.imul(state ^ (state >>> 15), 1 | state);
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+  const pick = arr => arr[Math.floor(nextRandom() * arr.length)];
+  const below = n => Math.floor(nextRandom() * n);
+
+  const rpc = ganache.provider({ logging: { quiet: true }, chain: { hardfork: 'shanghai', time: new Date('2026-01-01T00:00:00Z') }, wallet: { totalAccounts: 6 }, miner: { timestampIncrement: 0 } });
+  const provider = new BrowserProvider(rpc, undefined, { cacheTimeout: -1 });
+  provider.pollingInterval = 10;
+  t.after(async () => { provider.destroy(); await rpc.disconnect(); });
+  const signers = await Promise.all([0, 1, 2, 3, 4, 5].map(i => provider.getSigner(i)));
+  const [patientA, patientB, delegate1, delegate2, delegate3, stranger] = signers;
+  const patients = [patientA, patientB];
+  const grantees = [delegate1, delegate2, delegate3, stranger];
+  const allAccounts = signers.map(s => s.address);
+  const registry = await new ContractFactory(artifact.abi, artifact.bytecode, patientA).deploy();
+  await registry.waitForDeployment();
+  let now = Number((await provider.getBlock('latest')).timestamp);
+
+  const epochs = new Map(patients.map(p => [p.address, 0]));
+  const records = new Map();
+  const recordIds = [];
+  const previousCounts = new Map();
+  let saltCounter = 0;
+  let valueCounter = 0;
+  const freshBytes = label => id(`invariant-${label}-${valueCounter++}`);
+
+  const modelAccess = (record, account) => {
+    if (!record || record.archived) return { read: false, write: false };
+    if (account === record.patient) return { read: true, write: true };
+    const grant = record.grants.get(account);
+    if (!grant || grant.epoch !== epochs.get(record.patient) || !(now < grant.expiresAt)) return { read: false, write: false };
+    return { read: (grant.permissions & 1) !== 0, write: (grant.permissions & 2) !== 0 };
+  };
+
+  async function checkInvariants(step) {
+    for (const [recordId, record] of records) {
+      const onchain = await registry.getRecord(recordId);
+      assert.equal(onchain.patient, record.patient, `step ${step}: patient drift on ${recordId}`);
+      assert.equal(onchain.archived, record.archived, `step ${step}: archive drift on ${recordId}`);
+      assert.equal(onchain.versionCount, BigInt(record.versions.length), `step ${step}: version count drift on ${recordId}`);
+      const previous = previousCounts.get(recordId) ?? 0n;
+      assert.ok(onchain.versionCount >= previous, `step ${step}: version count decreased on ${recordId}`);
+      previousCounts.set(recordId, onchain.versionCount);
+      for (const account of allAccounts) {
+        const expected = modelAccess(record, account);
+        assert.equal(await registry.canRead(recordId, account), expected.read, `step ${step}: canRead(${recordId}, ${account})`);
+        assert.equal(await registry.canWrite(recordId, account), expected.write, `step ${step}: canWrite(${recordId}, ${account})`);
+      }
+      for (const grantee of grantees) {
+        const stored = await registry.getGrant(recordId, grantee.address);
+        const grant = record.grants.get(grantee.address);
+        assert.equal(stored.permissions, BigInt(grant ? grant.permissions : 0), `step ${step}: grant permissions drift on ${recordId}`);
+        assert.equal(stored.expiresAt, BigInt(grant ? grant.expiresAt : 0), `step ${step}: grant expiry drift on ${recordId}`);
+        assert.equal(stored.epoch, BigInt(grant ? grant.epoch : 0), `step ${step}: grant epoch drift on ${recordId}`);
+      }
+      for (let v = 1; v <= record.versions.length; v++) {
+        const stored = await registry.getVersion(recordId, v);
+        assert.equal(stored.locatorCommitment, record.versions[v - 1].locatorCommitment, `step ${step}: version ${v} locator mutated on ${recordId}`);
+        assert.equal(stored.ciphertextHash, record.versions[v - 1].ciphertextHash, `step ${step}: version ${v} ciphertext hash mutated on ${recordId}`);
+        assert.equal(stored.author, record.versions[v - 1].author, `step ${step}: version ${v} author mutated on ${recordId}`);
+      }
+    }
+  }
+
+  const opCounts = { create: 0, append: 0, grant: 0, revoke: 0, revokeAll: 0, archive: 0, advanceTime: 0, foreignManage: 0, duplicateCreate: 0 };
+  for (let step = 0; step < STEPS; step++) {
+    const roll = nextRandom();
+    if (recordIds.length === 0 || roll < 0.10) {
+      const patient = pick(patients);
+      if (recordIds.length > 0 && nextRandom() < 0.25) {
+        opCounts.duplicateCreate++;
+        const owner = pick(patients);
+        const existing = pick([...records.values()].filter(r => r.patient === owner.address));
+        if (existing) {
+          await rejected(registry.connect(owner).createRecord.staticCall(existing.salt, freshBytes('locator'), freshBytes('digest')));
+        }
+      } else {
+        opCounts.create++;
+        const saltValue = id(`invariant-salt-${saltCounter++}`);
+        const recordId = await registry.computeRecordId(patient.address, saltValue);
+        const locatorValue = freshBytes('locator');
+        const digestValue = freshBytes('digest');
+        await (await registry.connect(patient).createRecord(saltValue, locatorValue, digestValue)).wait();
+        records.set(recordId, { patient: patient.address, salt: saltValue, archived: false, grants: new Map(), versions: [{ locatorCommitment: locatorValue, ciphertextHash: digestValue, author: patient.address }] });
+        recordIds.push(recordId);
+      }
+    } else if (roll < 0.34) {
+      opCounts.append++;
+      const recordId = pick(recordIds);
+      const record = records.get(recordId);
+      const caller = pick([patients.find(p => p.address === record.patient), ...grantees]);
+      const useCorrectCount = nextRandom() < 0.75;
+      const expectedVersion = useCorrectCount ? record.versions.length : below(record.versions.length + 2);
+      const locatorValue = freshBytes('locator');
+      const digestValue = freshBytes('digest');
+      const shouldPass = !record.archived && modelAccess(record, caller.address).write && expectedVersion === record.versions.length;
+      if (shouldPass) {
+        await (await registry.connect(caller).appendVersion(recordId, expectedVersion, locatorValue, digestValue)).wait();
+        record.versions.push({ locatorCommitment: locatorValue, ciphertextHash: digestValue, author: caller.address });
+      } else {
+        await rejected(registry.connect(caller).appendVersion.staticCall(recordId, expectedVersion, locatorValue, digestValue));
+      }
+    } else if (roll < 0.56) {
+      opCounts.grant++;
+      const recordId = pick(recordIds);
+      const record = records.get(recordId);
+      const owner = patients.find(p => p.address === record.patient);
+      const grantee = pick(grantees);
+      const permissions = 1 + below(3);
+      const delta = pick([-50, 10, 100, 1000, 5000]);
+      const expiresAt = now + delta;
+      const shouldPass = !record.archived && expiresAt > now;
+      if (shouldPass) {
+        await (await registry.connect(owner).grantAccess(recordId, grantee.address, permissions, expiresAt)).wait();
+        record.grants.set(grantee.address, { permissions, expiresAt, epoch: epochs.get(record.patient) });
+      } else {
+        await rejected(registry.connect(owner).grantAccess.staticCall(recordId, grantee.address, permissions, expiresAt));
+      }
+    } else if (roll < 0.64) {
+      opCounts.revoke++;
+      const recordId = pick(recordIds);
+      const record = records.get(recordId);
+      const owner = patients.find(p => p.address === record.patient);
+      const grantee = pick(grantees);
+      await (await registry.connect(owner).revokeAccess(recordId, grantee.address)).wait();
+      record.grants.delete(grantee.address);
+    } else if (roll < 0.70) {
+      opCounts.revokeAll++;
+      const patient = pick(patients);
+      await (await registry.connect(patient).revokeAllAccess()).wait();
+      epochs.set(patient.address, epochs.get(patient.address) + 1);
+    } else if (roll < 0.80) {
+      opCounts.archive++;
+      const recordId = pick(recordIds);
+      const record = records.get(recordId);
+      const owner = patients.find(p => p.address === record.patient);
+      const target = !record.archived;
+      await (await registry.connect(owner).setArchived(recordId, target)).wait();
+      record.archived = target;
+    } else if (roll < 0.92) {
+      opCounts.advanceTime++;
+      now += 1 + below(600);
+      await rpc.request({ method: 'evm_setTime', params: [now * 1000] });
+      await rpc.request({ method: 'evm_mine', params: [] });
+    } else {
+      opCounts.foreignManage++;
+      const recordId = pick(recordIds);
+      const record = records.get(recordId);
+      const outsider = pick(signers.filter(s => s.address !== record.patient));
+      await rejected(registry.connect(outsider).grantAccess.staticCall(recordId, delegate1.address, 3, now + 100));
+      await rejected(registry.connect(outsider).revokeAccess.staticCall(recordId, delegate1.address));
+      await rejected(registry.connect(outsider).setArchived.staticCall(recordId, true));
+    }
+    await checkInvariants(step);
+  }
+  console.log(`invariant sequence complete: seed=${SEED} steps=${STEPS} records=${recordIds.length} operations=${JSON.stringify(opCounts)}`);
+});
