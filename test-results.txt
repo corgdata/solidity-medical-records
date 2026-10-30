@@ -1,3 +1,5 @@
+SNAPSHOT: output of a single local test run (npm test), committed 2026-10-21 in commit 464dba1351. This file is a frozen record of that run, not a statement of current test state.
+
 Command: npm test
 Environment: Node.js v24.20.0
 Pretest: npm run compile (Solidity 0.8.30, Paris EVM, optimizer 200 runs)
