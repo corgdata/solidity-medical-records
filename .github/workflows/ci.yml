@@ -1,0 +1,21 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Contract test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Canonical hash guard (recorded hashes in SHA256SUMS)
+        run: node scripts/check-canonical-hash.mjs
+      - name: Clean install
+        run: npm ci
+      - name: Contract test suite (pretest compiles the contract)
+        run: npm test
