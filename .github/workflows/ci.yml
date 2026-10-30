@@ -19,3 +19,23 @@ jobs:
         run: npm ci
       - name: Contract test suite (pretest compiles the contract)
         run: npm test
+
+  slither:
+    name: Slither static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Slither and solc 0.8.30
+        run: |
+          pip install slither-analyzer==0.11.6 solc-select
+          solc-select install 0.8.30
+          solc-select use 0.8.30
+      # The timestamp detector is excluded because its two findings are the
+      # contract's documented exclusive-expiry mechanism itself; both were
+      # read and dispositioned as false positives in VALIDATION.md
+      # (addendum, 30 October 2026). Every other detector fails this job.
+      - name: Run Slither on the registry contract
+        run: slither contracts/MedicalRecordsRegistry.sol --solc "$HOME/.solc-select/artifacts/solc-0.8.30/solc-0.8.30" --exclude timestamp
