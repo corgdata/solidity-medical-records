@@ -1,7 +1,7 @@
-SNAPSHOT: output of a single local test run (npm test), committed 2026-10-21 in commit 464dba1351. This file is a frozen record of that run, not a statement of current test state.
+SNAPSHOT: output of a single local test run (npm test), run 2026-10-30 for the amended verification package (Slither run and dispositions plus the seeded invariant sequence test). This file is a frozen record of that run, not a statement of current test state.
 
 Command: npm test
-Environment: Node.js v24.20.0
+Environment: Node.js v24.22.1
 Pretest: npm run compile (Solidity 0.8.30, Paris EVM, optimizer 200 runs)
 Compiled MedicalRecordsRegistry: 3732 deployed bytes; solc 0.8.30+commit.73712a01.Emscripten.clang; Paris EVM.
 
@@ -17,29 +17,31 @@ Require stack:
 Falling back to a NodeJS implementation; performance may be degraded.
 
 
-✔ creation records ownership, immutable first version, and owner permissions (700.796599ms)
-✔ unknown records deny access and metadata/version reads reject (193.422633ms)
-✔ record identifiers are patient namespaced; duplicate creation cannot overwrite (260.006518ms)
-✔ zero commitments and ciphertext hashes are rejected on create and append (199.809282ms)
-✔ ungranted callers cannot append or manage permissions or archive (212.209803ms)
-✔ read-only permission allows gateway read authorization but not append (231.584896ms)
-✔ writer appends attributed version without modifying earlier version or gaining administration (326.656222ms)
-✔ compare-and-swap rejects stale and future versions; invalid indices reject (425.635831ms)
-✔ grants reject invalid masks, zero address, and expired grants (207.807871ms)
-✔ grant expires exactly at expiresAt; expired writers cannot append (243.096313ms)
-✔ revocation immediately blocks read and write; a new explicit grant works (471.339075ms)
-✔ global revoke invalidates all patient grants without affecting another patient (470.51606ms)
-✔ archiving disables owner and delegate policy access and writes; restoring preserves history (358.136122ms)
-✔ metadata is publicly readable even without an access grant (131.157636ms)
-✔ state-changing operations emit parseable events with record identifiers (290.757564ms)
-✔ write-only grants do not imply reads and replacement can downgrade a writer to reader (441.689431ms)
-✔ restore reactivates retained valid grants but not grants revoked while archived (413.518825ms)
-✔ global revoke covers multiple same-owner records, including archived ones, and isolates other patients (747.084811ms)
-ℹ tests 18
+✔ creation records ownership, immutable first version, and owner permissions (676.758611ms)
+✔ unknown records deny access and metadata/version reads reject (203.744017ms)
+✔ record identifiers are patient namespaced; duplicate creation cannot overwrite (247.988085ms)
+✔ zero commitments and ciphertext hashes are rejected on create and append (181.887977ms)
+✔ ungranted callers cannot append or manage permissions or archive (210.565074ms)
+✔ read-only permission allows gateway read authorization but not append (215.474876ms)
+✔ writer appends attributed version without modifying earlier version or gaining administration (287.298506ms)
+✔ compare-and-swap rejects stale and future versions; invalid indices reject (239.725106ms)
+✔ grants reject invalid masks, zero address, and expired grants (246.355899ms)
+✔ grant expires exactly at expiresAt; expired writers cannot append (278.098212ms)
+✔ revocation immediately blocks read and write; a new explicit grant works (383.110374ms)
+✔ global revoke invalidates all patient grants without affecting another patient (503.421765ms)
+✔ archiving disables owner and delegate policy access and writes; restoring preserves history (318.988631ms)
+✔ metadata is publicly readable even without an access grant (180.141118ms)
+✔ state-changing operations emit parseable events with record identifiers (435.057101ms)
+✔ write-only grants do not imply reads and replacement can downgrade a writer to reader (507.708532ms)
+✔ restore reactivates retained valid grants but not grants revoked while archived (414.483003ms)
+✔ global revoke covers multiple same-owner records, including archived ones, and isolates other patients (707.489127ms)
+invariant sequence complete: seed=20261030 steps=200 records=16 operations={"create":16,"append":54,"grant":49,"revoke":18,"revokeAll":12,"archive":24,"advanceTime":15,"foreignManage":9,"duplicateCreate":3}
+✔ seeded random operation sequences preserve access, expiry, archive, and version invariants (552798.118263ms)
+ℹ tests 19
 ℹ suites 0
-ℹ pass 18
+ℹ pass 19
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 6978.877463
+ℹ duration_ms 560178.000716
